@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda de Zumos</title>
+    <link rel="stylesheet" href="carr.css">
+</head>
+<body>
+    <h1>Tienda de videojuegos </h1>
+
+    <section id="productos">
+        
+    </section>
+
+    <section id="carrito">
+        <h2>Carrito de Compras</h2>
+        <ul id="lista-carrito"></ul>
+        <button id="vaciar-carrito">Vaciar Carrito</button>
+    </section>
+
+    <script>
+    
+        const productos = [
+            { id: 1, nombre: 'FC 25', precio: 80, img: 'https://m.media-amazon.com/images/I/81iAfj6SgYL._AC_UF894,1000_QL80_.jpg' },
+            { id: 2, nombre: 'NBA 2K25', precio: 75.99, img: 'https://m.media-amazon.com/images/I/81MQta5iWrL.jpg' },
+            { id: 3, nombre: 'GTA V', precio: 19.99, img: 'https://m.media-amazon.com/images/I/717n2jHZ7pL.jpg' },
+            { id: 4, nombre: 'God of War Ragnarok', precio: 60, img: 'https://acdn.mitiendanube.com/stores/002/596/264/products/ps5-copy201-2e914dff7e0473cd4316824433125831-1024-1024.jpg' },
+            { id: 5, nombre: 'Red Dead Redemption 2', precio: 39.99, img: 'https://digitaliagames.com/wp-content/uploads/2024/08/read-redeption-2-ps5.jpg' },
+            { id: 6, nombre: 'Assassins Creed Mirage', precio: 65.99, img: 'https://m.media-amazon.com/images/I/81UyWpCOPNL._AC_UF894,1000_QL80_.jpg' },
+            { id: 7, nombre: 'Elden Ring', precio: 69.99, img: 'https://m.media-amazon.com/images/I/81pF8NzKtzS._AC_UF894,1000_QL80_.jpg' },
+            { id: 8, nombre: 'Spider-Man', precio: 49.99, img: 'https://m.media-amazon.com/images/I/81DC-janmJL._AC_UF894,1000_QL80_.jpg' }
+        ];
+
+       
+        const contenedorProductos = document.getElementById('productos');
+        const listaCarrito = document.getElementById('lista-carrito');
+        const botonVaciar = document.getElementById('vaciar-carrito');
+
+        // Carrito
+        let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+        // Función para mostrar productos
+        function mostrarProductos() {
+            productos.forEach(producto => {
+                const divProducto = document.createElement('div');
+                divProducto.classList.add('producto');
+                divProducto.innerHTML = `
+                    <img src="${producto.img}" alt="${producto.nombre}">
+                    <h3>${producto.nombre}</h3>
+                    <p>Precio: $${producto.precio}</p>
+                    <button onclick="agregarAlCarrito(${producto.id})">Agregar al Carrito</button>
+                `;
+                contenedorProductos.appendChild(divProducto);
+            });
+        }
+
+        // Función para agregar producto al carrito
+        function agregarAlCarrito(id) {
+            const productoSeleccionado = productos.find(p => p.id === id);
+            const productoEnCarrito = carrito.find(p => p.id === id);
+            if (productoEnCarrito) {
+                productoEnCarrito.cantidad++;
+            } else {
+                carrito.push({ ...productoSeleccionado, cantidad: 1 });
+            }
+            actualizarCarrito();
+        }
+
+        // Función para actualizar el carrito
+        function actualizarCarrito() {
+            listaCarrito.innerHTML = '';
+            carrito.forEach(producto => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    ${producto.nombre} - Cantidad: ${producto.cantidad}
+                    <button onclick="eliminarDelCarrito(${producto.id})">Eliminar</button>
+                `;
+                listaCarrito.appendChild(li);
+            });
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+        }
+
+        // Función para eliminar producto del carrito
+        function eliminarDelCarrito(id) {
+            carrito = carrito.filter(p => p.id !== id);
+            actualizarCarrito();
+        }
+
+        // Función para vaciar el carrito
+        botonVaciar.addEventListener('click', () => {
+            carrito = [];
+            actualizarCarrito();
+        });
+
+        // Mostrar productos al cargar la página
+        mostrarProductos();
+        actualizarCarrito();
+    </script>
+</body>
+</html>
